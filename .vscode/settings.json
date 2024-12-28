@@ -1,3 +1,10 @@
 {
-  "autoHide.autoHideSideBar": false
+  "autoHide.autoHideSideBar": false,
+  "jest.autoRun": {
+    "watch": true,
+    "onSave": "test-file"
+  },
+  "jest.testExplorer": {
+    "enabled": true
+  }
 }

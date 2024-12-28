@@ -4,27 +4,33 @@ const path = require('path');
 
 describe('树形结构解析器测试', () => {
   describe('parseTreeString', () => {
-    test('应该正确解析简单的树形结构', () => {
+    test('应该正确解析传统树形格式', () => {
       const input = `
-├── file1.txt
-├── folder1/
-│   └── file2.txt
-      `;
-      
+├── folder/
+│   ├── file.txt
+│   └── subfolder/
+│       └── deep.txt
+`;
       const expected = [
         {
-          name: 'file1.txt',
-          type: 'file',
-          children: []
-        },
-        {
-          name: 'folder1',
+          name: 'folder',
           type: 'folder',
           children: [
             {
-              name: 'file2.txt',
+              name: 'file.txt',
               type: 'file',
               children: []
+            },
+            {
+              name: 'subfolder',
+              type: 'folder',
+              children: [
+                {
+                  name: 'deep.txt',
+                  type: 'file',
+                  children: []
+                }
+              ]
             }
           ]
         }
@@ -33,8 +39,154 @@ describe('树形结构解析器测试', () => {
       expect(parseTreeString(input)).toEqual(expected);
     });
 
-    test('应该处理空输入', () => {
-      expect(parseTreeString('')).toEqual([]);
+    test('应该正确解析简单缩进格式', () => {
+      const input = `
+folder
+  file.txt
+  subfolder
+    another.txt
+`;
+      const expected = [
+        {
+          name: 'folder',
+          type: 'folder',
+          children: [
+            {
+              name: 'file.txt',
+              type: 'file',
+              children: []
+            },
+            {
+              name: 'subfolder',
+              type: 'folder',
+              children: [
+                {
+                  name: 'another.txt',
+                  type: 'file',
+                  children: []
+                }
+              ]
+            }
+          ]
+        }
+      ];
+
+      expect(parseTreeString(input)).toEqual(expected);
+    });
+
+    test('应该正确解析混合格式', () => {
+      const input = `
+folder/
+  file.txt
+  subfolder/
+    └── another.txt
+`;
+      const expected = [
+        {
+          name: 'folder',
+          type: 'folder',
+          children: [
+            {
+              name: 'file.txt',
+              type: 'file',
+              children: []
+            },
+            {
+              name: 'subfolder',
+              type: 'folder',
+              children: [
+                {
+                  name: 'another.txt',
+                  type: 'file',
+                  children: []
+                }
+              ]
+            }
+          ]
+        }
+      ];
+
+      expect(parseTreeString(input)).toEqual(expected);
+    });
+
+    test('应该正确解析项目结构格式', () => {
+      const input = `
+├── package.json
+├── src/
+│   ├── index.ts
+│   └── utils/
+│       └── helper.ts
+`;
+      const expected = [
+        {
+          name: 'package.json',
+          type: 'file',
+          children: []
+        },
+        {
+          name: 'src',
+          type: 'folder',
+          children: [
+            {
+              name: 'index.ts',
+              type: 'file',
+              children: []
+            },
+            {
+              name: 'utils',
+              type: 'folder',
+              children: [
+                {
+                  name: 'helper.ts',
+                  type: 'file',
+                  children: []
+                }
+              ]
+            }
+          ]
+        }
+      ];
+
+      expect(parseTreeString(input)).toEqual(expected);
+    });
+
+    test('应该正确处理空行和空格', () => {
+      const input = `
+
+folder/
+
+  file.txt
+  
+  subfolder/
+    another.txt
+
+`;
+      const expected = [
+        {
+          name: 'folder',
+          type: 'folder',
+          children: [
+            {
+              name: 'file.txt',
+              type: 'file',
+              children: []
+            },
+            {
+              name: 'subfolder',
+              type: 'folder',
+              children: [
+                {
+                  name: 'another.txt',
+                  type: 'file',
+                  children: []
+                }
+              ]
+            }
+          ]
+        }
+      ];
+
+      expect(parseTreeString(input)).toEqual(expected);
     });
   });
 
