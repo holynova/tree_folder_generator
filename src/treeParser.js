@@ -5,6 +5,7 @@ const path = require('path');
 function parseTreeString(treeStr) {
     const lines = treeStr.split('\n').filter(line => line.trim());
     const root = { name: 'root', type: 'folder', children: [] };
+    const stack = [root];
     
     for (const line of lines) {
         // 计算缩进级别 - 支持多种缩进格式
@@ -25,17 +26,19 @@ function parseTreeString(treeStr) {
             children: []
         };
         
-        // 找到父节点并添加当前节点
-        let parent = root;
-        let currentLevel = 0;
-        while (currentLevel < level) {
-            if (!parent.children.length) {
-                break; // 防止错误的缩进导致的问题
-            }
-            parent = parent.children[parent.children.length - 1];
-            currentLevel++;
+        // 调整堆栈以匹配当前级别
+        while (stack.length > level + 1) {
+            stack.pop();
         }
+        
+        // 将节点添加到当前父节点
+        const parent = stack[stack.length - 1];
         parent.children.push(node);
+        
+        // 如果是文件夹，将其加入堆栈
+        if (type === 'folder') {
+            stack.push(node);
+        }
     }
     
     return root.children;
@@ -98,7 +101,7 @@ async function main() {
     }
 }
 
-main();
+// main();
 
 module.exports = {
   parseTreeString,

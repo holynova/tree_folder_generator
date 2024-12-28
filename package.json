@@ -1,0 +1,28 @@
+{
+  "name": "tree-string-parser",
+  "version": "1.0.0",
+  "description": "A Node.js utility that parses tree-structure strings and creates corresponding file system structures",
+  "main": "src/treeParser.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "start": "node src/treeParser.js"
+  },
+  "keywords": [
+    "tree",
+    "parser",
+    "file-system",
+    "directory-structure"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/test/**/*.test.js"
+    ]
+  }
+} 
