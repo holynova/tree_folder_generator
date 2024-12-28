@@ -39,6 +39,9 @@ function parseTreeString(treeStr) {
 
 // 创建文件系统结构的函数
 async function createFileSystem(tree, basePath = '.') {
+    // 首先确保基础路径存在
+    await fs.mkdir(basePath, { recursive: true });
+    
     for (const node of tree) {
         const currentPath = path.join(basePath, node.name);
         
@@ -84,7 +87,7 @@ async function main() {
 
     // 创建文件系统
     try {
-        await createFileSystem(tree);
+        await createFileSystem(tree,'./output');
         console.log('文件系统结构已创建成功！');
     } catch (error) {
         console.error('创建文件系统时出错：', error);
