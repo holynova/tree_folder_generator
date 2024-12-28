@@ -7,14 +7,15 @@ function parseTreeString(treeStr) {
     const root = { name: 'root', type: 'folder', children: [] };
     
     for (const line of lines) {
-        // 计算缩进级别
-        const level = (line.match(/│   /g) || []).length + (line.match(/    /g) || []).length;
+        // 计算缩进级别 - 支持多种缩进格式
+        const indentMatch = line.match(/^[\s│]*(?:├──|└──|\s+)?/)[0];
+        const level = Math.floor(indentMatch.length / 2); // 假设每个缩进是2个字符
         
-        // 提取文件/文件夹名称
-        const name = line.match(/[^│├──\s]+$/)[0];
+        // 提取文件/文件夹名称 - 移除所有前缀字符
+        const name = line.substring(indentMatch.length).trim();
         
         // 判断类型
-        const type = line.includes('/') ? 'folder' : 'file';
+        const type = name.endsWith('/') || name.includes('.') === false ? 'folder' : 'file';
         const cleanName = name.replace('/', '');
         
         // 创建节点
@@ -28,6 +29,9 @@ function parseTreeString(treeStr) {
         let parent = root;
         let currentLevel = 0;
         while (currentLevel < level) {
+            if (!parent.children.length) {
+                break; // 防止错误的缩进导致的问题
+            }
             parent = parent.children[parent.children.length - 1];
             currentLevel++;
         }
