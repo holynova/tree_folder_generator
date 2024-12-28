@@ -9,11 +9,14 @@ function parseTreeString(treeStr) {
     
     for (const line of lines) {
         // 计算缩进级别 - 支持多种缩进格式
-        const indentMatch = line.match(/^[\s│]*(?:├──|└──|\s+)?/)[0];
-        const level = Math.floor(indentMatch.length / 2); // 假设每个缩进是2个字符
+        const indentMatch = line.match(/^[\s│]*/)[0];
+        // 计算实际的缩进级别：每个缩进单位（两个空格或一个制表符）算作一级
+        const level = Math.floor(
+            (indentMatch.match(/(\s\s)|(\t)|\│\s\s/g) || []).length
+        );
         
         // 提取文件/文件夹名称 - 移除所有前缀字符
-        const name = line.substring(indentMatch.length).trim();
+        const name = line.replace(/^[\s│]*├──\s*|^[\s│]*└──\s*|^[\s│]*/, '').trim();
         
         // 判断类型
         const type = name.endsWith('/') || name.includes('.') === false ? 'folder' : 'file';
@@ -101,7 +104,7 @@ async function main() {
     }
 }
 
-// main();
+main();
 
 module.exports = {
   parseTreeString,
